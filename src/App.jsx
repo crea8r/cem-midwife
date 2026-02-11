@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import confetti from 'canvas-confetti'
 import './App.css'
 
 const CASE_TIME_LIMIT = 45
@@ -169,6 +170,7 @@ function App() {
   const [selected, setSelected] = useState(null)
   const [submitted, setSubmitted] = useState(false)
   const [secondsLeft, setSecondsLeft] = useState(CASE_TIME_LIMIT)
+  const [confidence, setConfidence] = useState(3)
 
   useEffect(() => {
     if (submitted || secondsLeft <= 0) return
@@ -188,6 +190,13 @@ function App() {
 
   const currentCase = cases[currentIndex]
   const timedOut = secondsLeft === 0
+  const timerPercent = Math.max(0, Math.round((secondsLeft / CASE_TIME_LIMIT) * 100))
+
+  const confidenceLabel = useMemo(() => {
+    if (confidence <= 2) return 'Thấp'
+    if (confidence === 3) return 'Trung bình'
+    return 'Cao'
+  }, [confidence])
 
   const handleSubmit = () => {
     if (selected === null || submitted) return
@@ -198,6 +207,7 @@ function App() {
     setSelected(null)
     setSubmitted(false)
     setSecondsLeft(CASE_TIME_LIMIT)
+    setConfidence(3)
   }
 
   const handleNext = () => {
@@ -206,6 +216,7 @@ function App() {
     setSelected(null)
     setSubmitted(false)
     setSecondsLeft(CASE_TIME_LIMIT)
+    setConfidence(3)
   }
 
   const handleResetAll = () => {
@@ -214,10 +225,22 @@ function App() {
     setSelected(null)
     setSubmitted(false)
     setSecondsLeft(CASE_TIME_LIMIT)
+    setConfidence(3)
   }
 
   const isCorrect = selected === currentCase.answer
   const showResult = submitted || timedOut
+
+  useEffect(() => {
+    if (!submitted || !isCorrect) return
+
+    confetti({
+      particleCount: 90,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#2563eb', '#16a34a', '#f59e0b'],
+    })
+  }, [submitted, isCorrect, currentIndex])
 
   return (
     <main className="app">
@@ -229,12 +252,28 @@ function App() {
         </p>
       </header>
 
+      <section className="panel hero">
+        <img
+          src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1200&q=80"
+          alt="Điều dưỡng hỗ trợ chăm sóc thai phụ"
+        />
+        <small>
+          Ảnh minh hoạ miễn phí từ Unsplash để demo giao diện học trực quan hơn.
+        </small>
+      </section>
+
       <section className="panel topbar">
         <div>
           <strong>Ca:</strong> {currentCase.id}/{cases.length} - {currentCase.title}
         </div>
         <div className={secondsLeft <= 10 ? 'timer timer-danger' : 'timer'}>
           ⏱ {secondsLeft}s
+        </div>
+        <div className="timer-track" aria-label="Tiến độ thời gian còn lại">
+          <div
+            className={`timer-fill ${secondsLeft <= 10 ? 'danger' : ''}`}
+            style={{ width: `${timerPercent}%` }}
+          />
         </div>
       </section>
 
@@ -262,6 +301,21 @@ function App() {
           ))}
         </div>
 
+        <div className="confidence-box">
+          <label htmlFor="confidence-slider">
+            Độ tự tin trước khi nộp: <strong>{confidence}/5 ({confidenceLabel})</strong>
+          </label>
+          <input
+            id="confidence-slider"
+            type="range"
+            min="1"
+            max="5"
+            value={confidence}
+            onChange={(event) => setConfidence(Number(event.target.value))}
+            disabled={showResult}
+          />
+        </div>
+
         <div className="actions">
           <button onClick={handleSubmit} disabled={selected === null || submitted || timedOut}>
             Nộp bài
@@ -287,6 +341,9 @@ function App() {
           ) : (
             <p className="wrong">❌ Chưa đúng. Bạn có thể làm lại để cải thiện kết quả.</p>
           )}
+          <p>
+            <strong>Độ tự tin bạn chọn:</strong> {confidence}/5 ({confidenceLabel})
+          </p>
           <p>
             <strong>Giải thích:</strong> {currentCase.rationale}
           </p>
