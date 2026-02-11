@@ -1,0 +1,136 @@
+:root {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  color: #0f172a;
+  background: #f8fafc;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.app {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+header {
+  margin-bottom: 16px;
+}
+
+header p {
+  margin-top: 8px;
+  color: #475569;
+}
+
+.panel {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+}
+
+.timer {
+  color: #0369a1;
+}
+
+.timer-danger {
+  color: #b91c1c;
+}
+
+.options {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.option {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.option.active {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+button {
+  border: none;
+  background: #2563eb;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+button.secondary {
+  background: #475569;
+}
+
+button.ghost {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.result .correct {
+  color: #166534;
+  font-weight: 700;
+}
+
+.result .wrong {
+  color: #b91c1c;
+  font-weight: 700;
+}
+
+footer {
+  margin-top: 8px;
+  color: #64748b;
+}
+
+@media (max-width: 640px) {
+  .app {
+    padding: 12px;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
