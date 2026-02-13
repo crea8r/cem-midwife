@@ -230,6 +230,7 @@ function App() {
 
   const isCorrect = selected === currentCase.answer
   const showResult = submitted || timedOut
+  const isHintUrgent = secondsLeft <= 5 && !showResult
 
   useEffect(() => {
     if (!submitted || !isCorrect) return
@@ -286,49 +287,63 @@ function App() {
         <h2>Câu hỏi</h2>
         <p>{currentCase.question}</p>
 
-        <div className="options">
-          {currentCase.options.map((option, idx) => (
-            <label key={idx} className={`option ${selected === idx ? 'active' : ''}`}>
+        <div className="question-layout">
+          <div>
+            <div className="options">
+              {currentCase.options.map((option, idx) => (
+                <label key={idx} className={`option ${selected === idx ? 'active' : ''}`}>
+                  <input
+                    type="radio"
+                    name={`case-${currentCase.id}`}
+                    checked={selected === idx}
+                    onChange={() => setSelected(idx)}
+                    disabled={showResult}
+                  />
+                  <span>{option}</span>
+                </label>
+              ))}
+            </div>
+
+            <div className="confidence-box">
+              <label htmlFor="confidence-slider">
+                Độ tự tin trước khi nộp: <strong>{confidence}/5 ({confidenceLabel})</strong>
+              </label>
               <input
-                type="radio"
-                name={`case-${currentCase.id}`}
-                checked={selected === idx}
-                onChange={() => setSelected(idx)}
+                id="confidence-slider"
+                type="range"
+                min="1"
+                max="5"
+                value={confidence}
+                onChange={(event) => setConfidence(Number(event.target.value))}
                 disabled={showResult}
               />
-              <span>{option}</span>
-            </label>
-          ))}
-        </div>
+            </div>
 
-        <div className="confidence-box">
-          <label htmlFor="confidence-slider">
-            Độ tự tin trước khi nộp: <strong>{confidence}/5 ({confidenceLabel})</strong>
-          </label>
-          <input
-            id="confidence-slider"
-            type="range"
-            min="1"
-            max="5"
-            value={confidence}
-            onChange={(event) => setConfidence(Number(event.target.value))}
-            disabled={showResult}
-          />
-        </div>
+            <div className="actions">
+              <button onClick={handleSubmit} disabled={selected === null || submitted || timedOut}>
+                Nộp bài
+              </button>
+              <button onClick={handleRetry} className="secondary">
+                Làm lại ca này
+              </button>
+              <button onClick={handleNext} className="secondary" disabled={currentIndex === cases.length - 1}>
+                Ca tiếp theo
+              </button>
+              <button onClick={handleResetAll} className="ghost">
+                Tạo bộ ca mới
+              </button>
+            </div>
+          </div>
 
-        <div className="actions">
-          <button onClick={handleSubmit} disabled={selected === null || submitted || timedOut}>
-            Nộp bài
-          </button>
-          <button onClick={handleRetry} className="secondary">
-            Làm lại ca này
-          </button>
-          <button onClick={handleNext} className="secondary" disabled={currentIndex === cases.length - 1}>
-            Ca tiếp theo
-          </button>
-          <button onClick={handleResetAll} className="ghost">
-            Tạo bộ ca mới
-          </button>
+          <aside className={`hint-box ${isHintUrgent ? 'urgent' : ''}`}>
+            <h3>Gợi ý trả lời</h3>
+            <ul>
+              <li>Ưu tiên an toàn mẹ-thai và xử trí ban đầu ngay tại thời điểm tiếp nhận.</li>
+              <li>Loại trừ các đáp án có tính trì hoãn như “chờ thêm”, “cho về nhà”, “theo dõi thụ động”.</li>
+              <li>Chọn phương án có theo dõi sát + phối hợp báo bác sĩ khi có dấu hiệu nguy cơ.</li>
+            </ul>
+            <small>{isHintUrgent ? '⚠️ Còn dưới 5 giây, chốt đáp án ngay!' : 'Mẹo: đọc câu hỏi theo thứ tự “ưu tiên cấp cứu trước”.'}</small>
+          </aside>
         </div>
       </section>
 
